@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_of_week_mon">Poniedziałek</string>
+    <string name="day_of_week_tue">Wtorek</string>
+    <string name="day_of_week_wed">Środa</string>
+    <string name="day_of_week_thu">Czwartek</string>
+    <string name="day_of_week_fri">Piątek</string>
+    <string name="day_of_week_sat">Sobota</string>
+    <string name="day_of_week_sun">Niedziela</string>
+    <!-- Short -->
+    <string name="day_of_week_mon_short">Pn</string>
+    <string name="day_of_week_tue_short">Wt</string>
+    <string name="day_of_week_wed_short">Śr</string>
+    <string name="day_of_week_thu_short">Cz</string>
+    <string name="day_of_week_fri_short">Pt</string>
+    <string name="day_of_week_sat_short">Sb</string>
+    <string name="day_of_week_sun_short">Nd</string>
+</resources>
