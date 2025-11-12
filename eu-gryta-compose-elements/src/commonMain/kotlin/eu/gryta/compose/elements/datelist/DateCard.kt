@@ -34,7 +34,7 @@ fun DateCard(
 @Composable
 internal fun LocalDate.buttonText(): String {
     val dayString: String = stringResource(resource = this.dateOfWeek())
-    val shortDate = "${this.dayOfMonth}/${this.month.number}"
+    val shortDate = "${this.day}/${this.month.number}"
     return "$dayString $shortDate"
 }
 
