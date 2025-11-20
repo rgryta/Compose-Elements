@@ -136,3 +136,55 @@ tasks.withType<KotlinNativeSimulatorTest>().configureEach {
         device.set(deviceName)
     }
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/rgryta/Compose-Elements")
+            credentials {
+                username =
+                    project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = group.toString(),
+        artifactId = library,
+        version = versions.getProperty("version")
+    )
+
+    pom {
+        name.set("KMP Library containing various commonly used Jetpack Compose elements")
+        description.set("This library can be utilized by various KMP targets to build Jetpack Compose based views")
+        inceptionYear.set("2025")
+        url.set("https://github.com/rgryta/Compose-Elements")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("rgryta")
+                name.set("Radosław Gryta")
+                email.set("radek.gryta@gmail.com")
+                url.set("https://github.com/rgryta/")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/rgryta/Compose-Elements")
+            connection.set("scm:git:git://github.com/rgryta/Compose-Elements.git")
+            developerConnection.set("scm:git:ssh://git@github.com/rgryta/Compose-Elements.git")
+        }
+    }
+}

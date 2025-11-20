@@ -8,10 +8,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -21,27 +24,49 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+@Stable
+class InfiniteListState<E>(
+    initialItems: List<E>,
+    private val loadMore: suspend (currentItems: List<E>) -> List<E>
+) {
+    var items by mutableStateOf(initialItems)
+        private set
+
+    suspend fun loadMoreItems() {
+        val newItems = loadMore(items)
+        items = items + newItems
+    }
+}
+
+@Composable
+fun <E> rememberInfiniteListState(
+    initialItems: List<E>,
+    loadMore: suspend (currentItems: List<E>) -> List<E>
+): InfiniteListState<E> {
+    return remember(initialItems, loadMore) {
+        InfiniteListState(initialItems, loadMore)
+    }
+}
+
 @Composable
 fun <E> GenericInfiniteLazyRow(
+    state: InfiniteListState<E>,
     modifier: Modifier = Modifier,
-    items: List<E>,
-    onLoadMore: suspend () -> Unit,
-    itemContent: @Composable (E, () -> Unit) -> Unit,
     selectedIndex: Int? = null,
     onItemSelect: (E, E?) -> Unit = { _, _ -> },
     itemSpacing: Dp = 8.dp,
     loadMoreThreshold: Int = 5,
+    content: @Composable (E, () -> Unit) -> Unit,
 ) {
     val listState: LazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     val selectedItem by remember(selectedIndex) {
         derivedStateOf {
-            selectedIndex?.let { items.getOrNull(it) }
+            selectedIndex?.let { state.items.getOrNull(it) }
         }
     }
 
-    // Load more when visible
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo }
             .map { layoutInfo ->
@@ -55,7 +80,7 @@ fun <E> GenericInfiniteLazyRow(
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                onLoadMore()
+                state.loadMoreItems()
             }
     }
 
@@ -74,11 +99,11 @@ fun <E> GenericInfiniteLazyRow(
         reverseLayout = true,
     ) {
         itemsIndexed(
-            items = items,
+            items = state.items,
             key = { _, item -> item.hashCode() } // Consider a more stable key if possible
         ) { index: Int, item: E ->
             Spacer(modifier = Modifier.width(itemSpacing))
-            itemContent(
+            content(
                 item,
             ) {
                 onItemSelect(item, selectedItem)
