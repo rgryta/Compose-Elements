@@ -1,5 +1,6 @@
 package eu.gryta.compose.elements
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -24,7 +25,8 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
 
-@Preview(showBackground = true)
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun NavigationPreview() {
     var selectedDate by remember {
