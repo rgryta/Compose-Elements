@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import eu.gryta.compose.elements.datelist.DateList
 import eu.gryta.compose.elements.theme.AppTheme
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
@@ -35,22 +36,24 @@ fun NavigationPreview() {
         )
     }
     AppTheme {
-        Column(
-            modifier = Modifier.height(300.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = {
-                selectedDate = selectedDate.minus(DatePeriod(days = 7))
-            }) {
-                Text(selectedDate.toString())
-            }
-            DateList(
-                selectedDate = selectedDate,
-                onDateSelect = { newSelection, _ ->
-                    selectedDate = newSelection
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Column(
+                modifier = Modifier.height(300.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Button(onClick = {
+                    selectedDate = selectedDate.minus(DatePeriod(days = 7))
+                }) {
+                    Text(selectedDate.toString())
                 }
-            )
+                DateList(
+                    selectedDate = selectedDate,
+                    onDateSelect = { newSelection, _ ->
+                        selectedDate = newSelection
+                    }
+                )
+            }
         }
     }
 }
