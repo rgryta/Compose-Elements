@@ -19,6 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate Release Notes & Diff
+        id: generate_notes
         shell: bash
         run: |
           set -euo pipefail
@@ -28,7 +29,7 @@ jobs:
           CURRENT_TAG="${{ github.ref_name }}"
 
           # Find the previous tag (excluding the current one)
-          PREV_TAG=$(git tag --sort=-creatordate | grep -v "^${CURRENT_TAG}$" | head -n 1 || true)
+          PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || true)
 
           echo "Generating release for ${CURRENT_TAG} (Previous: ${PREV_TAG:-none})"
 
@@ -51,9 +52,11 @@ jobs:
           # -----------------------------
           # Diff as artifact
           # -----------------------------
-          touch context/full_diff.patch
           if [ -n "${PREV_TAG}" ]; then
              git diff $PREV_TAG HEAD > context/full_diff.patch
+             echo "upload_files=context/full_diff.patch" >> $GITHUB_OUTPUT
+          else
+             echo "upload_files=" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Release
@@ -61,7 +64,6 @@ jobs:
         with:
           token: ${{ secrets.GH_ACTIONS_TOKEN }}  # PAT Token that has repo and hooks permissions (403 or 404 HTTP errors otherwise)
           body_path: context/release_notes.md
-          files: |
-            context/full_diff.patch
+          files: ${{ steps.generate_notes.outputs.upload_files }}
           draft: false
           prerelease: false
