@@ -56,6 +56,7 @@ fun <E> GenericInfiniteLazyRow(
     onItemSelect: (E, E?) -> Unit = { _, _ -> },
     itemSpacing: Dp = 8.dp,
     loadMoreThreshold: Int = 5,
+    keySelector: ((E) -> Any)? = null,
     content: @Composable (E, () -> Unit) -> Unit,
 ) {
     val listState: LazyListState = rememberLazyListState()
@@ -100,7 +101,7 @@ fun <E> GenericInfiniteLazyRow(
     ) {
         itemsIndexed(
             items = state.items,
-            key = { _, item -> item.hashCode() } // Consider a more stable key if possible
+            key = { _, item -> keySelector?.invoke(item) ?: item.hashCode() }
         ) { index: Int, item: E ->
             Spacer(modifier = Modifier.width(itemSpacing))
             content(

@@ -85,6 +85,7 @@ fun DateList(
         onItemSelect = { selected, previous ->
             onDateSelect(selected.date, previous?.date)
         },
+        keySelector = { it.date.toEpochDays() },
     ) { dateCardInfo, onItemClick ->
         val selected = dateCardInfo.date == selectedDate
         DateCard(

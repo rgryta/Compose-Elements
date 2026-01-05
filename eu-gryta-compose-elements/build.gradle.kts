@@ -21,9 +21,14 @@ file("version.properties").inputStream().use { stream ->
 
 group = "eu.gryta"
 val library: String = "compose.elements"
-version = versions.getProperty("version")
+
+val baseVersion = versions.getProperty("version")
+val isCI = System.getenv("GITHUB_ACTIONS") == "true"
+version = if (isCI) baseVersion else "$baseVersion-SNAPSHOT"
 
 kotlin {
+    jvmToolchain(21)
+
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
     }
@@ -51,7 +56,11 @@ kotlin {
         }
     }
 
-    jvm()
+    jvm {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+    }
 
     js {
         browser()
@@ -79,6 +88,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutinesTest)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -155,7 +168,7 @@ mavenPublishing {
     coordinates(
         groupId = group.toString(),
         artifactId = library,
-        version = versions.getProperty("version")
+        version = version.toString()
     )
 
     pom {
