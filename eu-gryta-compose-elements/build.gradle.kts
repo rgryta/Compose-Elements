@@ -22,9 +22,17 @@ file("version.properties").inputStream().use { stream ->
 group = "eu.gryta"
 val library: String = "compose.elements"
 
+fun bumpPatchVersion(version: String): String {
+    val parts = version.split(".")
+    require(parts.size == 3) { "Version must be in MAJOR.MINOR.PATCH format" }
+    val (major, minor, patch) = parts
+    val newPatch = patch.toInt() + 1
+    return "$major.$minor.$newPatch"
+}
+
 val baseVersion = versions.getProperty("version")
 val isCI = System.getenv("GITHUB_ACTIONS") == "true"
-version = if (isCI) baseVersion else "$baseVersion-SNAPSHOT"
+version = if (isCI) baseVersion else "${bumpPatchVersion(baseVersion)}-SNAPSHOT"
 
 kotlin {
     jvmToolchain(21)
@@ -161,6 +169,7 @@ publishing {
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_TOKEN")
             }
         }
+        mavenLocal()
     }
 }
 
@@ -199,5 +208,33 @@ mavenPublishing {
             connection.set("scm:git:git://github.com/rgryta/Compose-Elements.git")
             developerConnection.set("scm:git:ssh://git@github.com/rgryta/Compose-Elements.git")
         }
+    }
+}
+
+val libraryGroup = group.toString()
+val libraryArtifact = library
+
+tasks.register("purgeMavenLocal") {
+    group = "publishing"
+    description = "Removes all KMP target artifacts for this library from Maven Local"
+    notCompatibleWithConfigurationCache("Accesses file system at task execution time")
+
+    doLast {
+        val m2 = File(System.getProperty("user.home"), ".m2/repository")
+        val groupPath = libraryGroup.replace('.', '/')
+        val baseArtifact = libraryArtifact
+
+        val groupDir = File(m2, groupPath)
+        if (!groupDir.exists()) {
+            println("Group directory does not exist: $groupDir")
+            return@doLast
+        }
+
+        groupDir.listFiles()
+            ?.filter { it.isDirectory && (it.name == baseArtifact || it.name.startsWith("$baseArtifact-")) }
+            ?.forEach { dir ->
+                dir.deleteRecursively()
+                println("Deleted ${dir.name}")
+            }
     }
 }
