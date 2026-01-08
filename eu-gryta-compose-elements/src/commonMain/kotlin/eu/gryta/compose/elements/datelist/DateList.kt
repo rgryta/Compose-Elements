@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eu.gryta.compose.elements.infinitelist.GenericInfiniteLazyRow
 import eu.gryta.compose.elements.infinitelist.rememberInfiniteListState
@@ -56,8 +57,15 @@ fun DateList(
         .toLocalDateTime(TimeZone.currentSystemDefault()).date,
     onDateSelect: (LocalDate, LocalDate?) -> Unit = { _, _ -> },
     initialItemsCount: Int = 50,
+    itemSpacing: Dp = 8.dp,
+    loadMoreThreshold: Int = 5,
     cardShape: Shape = RoundedCornerShape(12.dp),
     colors: DateListColors = DateListDefaults.colors(),
+    itemContent: (@Composable (
+        date: LocalDate,
+        selected: Boolean,
+        onClick: () -> Unit,
+    ) -> Unit)? = null,
 ) {
     val state = rememberInfiniteListState(
         initialItems = (0 until initialItemsCount).map {
@@ -85,17 +93,23 @@ fun DateList(
         onItemSelect = { selected, previous ->
             onDateSelect(selected.date, previous?.date)
         },
+        itemSpacing = itemSpacing,
+        loadMoreThreshold = loadMoreThreshold,
         keySelector = { it.date.toEpochDays() },
     ) { dateCardInfo, onItemClick ->
-        val selected = dateCardInfo.date == selectedDate
-        DateCard(
-            date = dateCardInfo.date,
-            selected = selected,
-            onClick = onItemClick,
-            shape = cardShape,
-            containerColor = if (selected) colors.selectedContainerColor else colors.unselectedContainerColor,
-            contentColor = if (selected) colors.selectedContentColor else colors.unselectedContentColor,
-            borderColor = if (selected) colors.selectedBorderColor else colors.unselectedBorderColor,
-        )
+        val isSelected = dateCardInfo.date == selectedDate
+        if (itemContent != null) {
+            itemContent(dateCardInfo.date, isSelected, onItemClick)
+        } else {
+            DateCard(
+                date = dateCardInfo.date,
+                selected = isSelected,
+                onClick = onItemClick,
+                shape = cardShape,
+                containerColor = if (isSelected) colors.selectedContainerColor else colors.unselectedContainerColor,
+                contentColor = if (isSelected) colors.selectedContentColor else colors.unselectedContentColor,
+                borderColor = if (isSelected) colors.selectedBorderColor else colors.unselectedBorderColor,
+            )
+        }
     }
 }
