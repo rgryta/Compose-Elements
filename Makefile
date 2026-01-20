@@ -14,7 +14,7 @@ test:
 
 publish:
 ifdef GITHUB_ACTIONS
-	$(GRADLEW) publishAllPublicationsToGitHubPackagesRepository --no-daemon --stacktrace --info --scan --no-configuration-cache
+	$(GRADLEW) publishAllPublicationsToGitHubPackagesRepository --no-daemon --stacktrace --info --scan
 else
 	$(GRADLEW) publishToMavenLocal
 endif
