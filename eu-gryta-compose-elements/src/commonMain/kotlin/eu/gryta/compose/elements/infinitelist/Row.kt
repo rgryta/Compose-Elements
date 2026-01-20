@@ -27,21 +27,35 @@ import kotlinx.coroutines.launch
 @Stable
 class InfiniteListState<E>(
     initialItems: List<E>,
-    private val loadMore: suspend (currentItems: List<E>) -> List<E>
+    private val loadMore: suspend (currentItems: List<E>) -> Result<List<E>>
 ) {
     var items by mutableStateOf(initialItems)
         private set
 
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var error by mutableStateOf<Throwable?>(null)
+        private set
+
     suspend fun loadMoreItems() {
-        val newItems = loadMore(items)
-        items = items + newItems
+        isLoading = true
+        error = null
+        loadMore(items)
+            .onSuccess { newItems -> items = items + newItems }
+            .onFailure { throwable -> error = throwable }
+        isLoading = false
+    }
+
+    fun retry() {
+        error = null
     }
 }
 
 @Composable
 fun <E> rememberInfiniteListState(
     initialItems: List<E>,
-    loadMore: suspend (currentItems: List<E>) -> List<E>
+    loadMore: suspend (currentItems: List<E>) -> Result<List<E>>
 ): InfiniteListState<E> {
     return remember(initialItems, loadMore) {
         InfiniteListState(initialItems, loadMore)

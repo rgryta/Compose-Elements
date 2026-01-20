@@ -55,7 +55,7 @@ fun DateList(
     modifier: Modifier = Modifier,
     selectedDate: LocalDate? = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()).date,
-    onDateSelect: (LocalDate, LocalDate?) -> Unit = { _, _ -> },
+    onDateSelect: (newDate: LocalDate, previousDate: LocalDate?) -> Unit = { _, _ -> },
     initialItemsCount: Int = 50,
     itemSpacing: Dp = 8.dp,
     loadMoreThreshold: Int = 5,
@@ -77,9 +77,11 @@ fun DateList(
         },
         loadMore = { currentItems ->
             val lastDate = currentItems.last().date
-            (1..initialItemsCount).map {
-                DateCardInfo(date = lastDate.minus(DatePeriod(days = it)))
-            }
+            Result.success(
+                (1..initialItemsCount).map {
+                    DateCardInfo(date = lastDate.minus(DatePeriod(days = it)))
+                }
+            )
         }
     )
 
