@@ -46,6 +46,7 @@ fun DateCard(
     selected: Boolean = false,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     containerColor: Color = if (selected) MaterialTheme.colorScheme.primaryContainer
     else MaterialTheme.colorScheme.surface,
     contentColor: Color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
@@ -59,11 +60,12 @@ fun DateCard(
 
     Surface(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.semantics {
-            contentDescription = if (selected) {
-                "Selected date: $dayName $shortDate"
-            } else {
-                "Date: $dayName $shortDate"
+            contentDescription = when {
+                !enabled -> "Disabled date: $dayName $shortDate"
+                selected -> "Selected date: $dayName $shortDate"
+                else -> "Date: $dayName $shortDate"
             }
             this.selected = selected
             role = Role.Button

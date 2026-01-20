@@ -29,6 +29,9 @@ data class DateListColors(
     val unselectedContentColor: Color,
     val selectedBorderColor: Color,
     val unselectedBorderColor: Color,
+    val disabledContainerColor: Color,
+    val disabledContentColor: Color,
+    val disabledBorderColor: Color,
 )
 
 object DateListDefaults {
@@ -40,6 +43,9 @@ object DateListDefaults {
         unselectedContentColor: Color = MaterialTheme.colorScheme.onSurface,
         selectedBorderColor: Color = MaterialTheme.colorScheme.primary,
         unselectedBorderColor: Color = MaterialTheme.colorScheme.outline,
+        disabledContainerColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        disabledContentColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        disabledBorderColor: Color = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
     ): DateListColors = DateListColors(
         selectedContainerColor = selectedContainerColor,
         unselectedContainerColor = unselectedContainerColor,
@@ -47,6 +53,9 @@ object DateListDefaults {
         unselectedContentColor = unselectedContentColor,
         selectedBorderColor = selectedBorderColor,
         unselectedBorderColor = unselectedBorderColor,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor,
+        disabledBorderColor = disabledBorderColor,
     )
 }
 
@@ -61,6 +70,10 @@ fun DateList(
     loadMoreThreshold: Int = 5,
     cardShape: Shape = RoundedCornerShape(12.dp),
     colors: DateListColors = DateListDefaults.colors(),
+    disabledDates: Set<LocalDate> = emptySet(),
+    isDateEnabled: (LocalDate) -> Boolean = { true },
+    minDate: LocalDate? = null,
+    maxDate: LocalDate? = null,
     itemContent: (@Composable (
         date: LocalDate,
         selected: Boolean,
@@ -101,6 +114,11 @@ fun DateList(
         keySelector = { it.date.toEpochDays() },
     ) { dateCardInfo, onItemClick ->
         val isSelected = dateCardInfo.date == selectedDate
+        val isEnabled = !disabledDates.contains(dateCardInfo.date) &&
+                        isDateEnabled(dateCardInfo.date) &&
+                        (minDate == null || dateCardInfo.date >= minDate) &&
+                        (maxDate == null || dateCardInfo.date <= maxDate)
+
         if (itemContent != null) {
             itemContent(dateCardInfo.date, isSelected, onItemClick)
         } else {
@@ -108,10 +126,23 @@ fun DateList(
                 date = dateCardInfo.date,
                 selected = isSelected,
                 onClick = onItemClick,
+                enabled = isEnabled,
                 shape = cardShape,
-                containerColor = if (isSelected) colors.selectedContainerColor else colors.unselectedContainerColor,
-                contentColor = if (isSelected) colors.selectedContentColor else colors.unselectedContentColor,
-                borderColor = if (isSelected) colors.selectedBorderColor else colors.unselectedBorderColor,
+                containerColor = when {
+                    !isEnabled -> colors.disabledContainerColor
+                    isSelected -> colors.selectedContainerColor
+                    else -> colors.unselectedContainerColor
+                },
+                contentColor = when {
+                    !isEnabled -> colors.disabledContentColor
+                    isSelected -> colors.selectedContentColor
+                    else -> colors.unselectedContentColor
+                },
+                borderColor = when {
+                    !isEnabled -> colors.disabledBorderColor
+                    isSelected -> colors.selectedBorderColor
+                    else -> colors.unselectedBorderColor
+                },
             )
         }
     }
