@@ -1,6 +1,6 @@
 # Compose-Elements
 
-[![Maven Central](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/rgryta/Compose-Elements/releases)
+[![Maven Central](https://img.shields.io/badge/version-1.1.1-blue)](https://github.com/rgryta/Compose-Elements/releases)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.3.0-purple.svg)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Compose-1.9.3-blue.svg)](https://www.jetbrains.com/lp/compose-multiplatform/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -55,7 +55,7 @@ Add the dependency to your module's `build.gradle.kts`:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("eu.gryta:compose.elements:1.1.0")
+            implementation("eu.gryta:compose.elements:1.1.1")
         }
     }
 }
@@ -300,7 +300,7 @@ This project uses [Semantic Versioning](https://semver.org/):
 - **MINOR** version for new functionality (backwards compatible)
 - **PATCH** version for bug fixes
 
-Current version: **1.1.0**
+Current version: **1.1.1**
 
 ## License
 
@@ -321,6 +321,9 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 - [GitHub Packages](https://github.com/rgryta/Compose-Elements/packages)
 
 ## Changelog
+
+### [1.1.1] - 2025-01-20
+- Fix Makefile to enable configuration cache in CI publish workflow
 
 ### [1.1.0] - 2025-01-05
 - Add comprehensive KDoc documentation for all public APIs
