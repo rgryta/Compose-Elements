@@ -34,6 +34,16 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+/**
+ * State holder for an infinite scrolling list.
+ *
+ * Manages the list of items, loading state, and error state for infinite scroll patterns.
+ *
+ * @param E The type of items in the list
+ * @param initialItems The initial list of items to display
+ * @param loadMore Suspending function that loads more items. Receives current items and
+ *        returns Result of new items to append.
+ */
 @Stable
 class InfiniteListState<E>(
     initialItems: List<E>,
@@ -72,6 +82,26 @@ fun <E> rememberInfiniteListState(
     }
 }
 
+/**
+ * A generic horizontally scrolling list with infinite scroll capability.
+ *
+ * Displays items in a LazyRow with automatic loading of more items as the user scrolls.
+ * Supports selection, custom item rendering, loading/error/empty states, and automatic
+ * scroll-to-selected behavior.
+ *
+ * @param E The type of items in the list
+ * @param state The state holder managing items and loading
+ * @param modifier Modifier to be applied to the root layout
+ * @param selectedIndex Optional index of the currently selected item (triggers auto-scroll)
+ * @param onItemSelect Callback when an item is selected. Parameters: (selected, previous)
+ * @param itemSpacing Horizontal spacing between items. Default: 8.dp
+ * @param loadMoreThreshold Items from end that trigger loading more. Default: 5
+ * @param keySelector Function to provide stable keys for items. Default: hashCode
+ * @param loadingContent Custom loading indicator. Default: Loading component
+ * @param errorContent Custom error UI with retry button. Default: error message + retry button
+ * @param emptyContent Custom empty state UI. Default: "No items" text
+ * @param content Composable for rendering each item. Receives (item, onClick)
+ */
 @Composable
 fun <E> GenericInfiniteLazyRow(
     state: InfiniteListState<E>,

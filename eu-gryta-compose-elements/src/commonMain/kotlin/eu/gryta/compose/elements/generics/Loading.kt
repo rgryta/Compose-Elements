@@ -26,6 +26,14 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 
+/**
+ * An animated loading indicator with three pulsing circles.
+ *
+ * @param circleColor Color of the loading circles. Default: primary color
+ * @param circleSize Size of each circle. Default: 36.dp
+ * @param animationDelay Duration of the pulse animation in milliseconds. Default: 400ms
+ * @param initialAlpha Initial alpha value of circles. Default: 0.3f
+ */
 @Composable
 fun Loading(
     circleColor: Color = MaterialTheme.colorScheme.primary,

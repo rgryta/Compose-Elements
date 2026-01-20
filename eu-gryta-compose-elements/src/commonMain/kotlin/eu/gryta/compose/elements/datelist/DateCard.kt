@@ -40,6 +40,19 @@ private val DAY_OF_WEEK_STRING_RESOURCES = mapOf(
     DayOfWeek.SUNDAY to Res.string.day_of_week_sun_short
 )
 
+/**
+ * A card displaying a single date with day-of-week and day/month.
+ *
+ * @param date The date to display
+ * @param selected Whether this date is currently selected
+ * @param onClick Callback invoked when the card is clicked
+ * @param modifier Modifier to be applied to the card
+ * @param enabled Whether the date can be selected
+ * @param containerColor Background color of the card
+ * @param contentColor Text color
+ * @param borderColor Border color
+ * @param shape Shape of the card
+ */
 @Composable
 fun DateCard(
     date: LocalDate,

@@ -59,6 +59,26 @@ object DateListDefaults {
     )
 }
 
+/**
+ * A horizontally scrollable date picker with infinite scroll capability.
+ *
+ * Displays dates in a horizontal row with the ability to select a date and load more dates
+ * on demand as the user scrolls. Dates are shown in descending order (newest first).
+ *
+ * @param modifier Modifier to be applied to the root layout
+ * @param selectedDate The currently selected date. Defaults to today. Pass null for no selection.
+ * @param onDateSelect Callback invoked when a date is selected. Parameters: (newDate, previousDate)
+ * @param initialItemsCount Number of dates to display initially. Default: 50
+ * @param itemSpacing Horizontal spacing between date cards. Default: 8.dp
+ * @param loadMoreThreshold How many items from the end trigger loading more. Default: 5
+ * @param cardShape Shape of individual date cards. Default: RoundedCornerShape(12.dp)
+ * @param colors Color scheme for the date cards
+ * @param disabledDates Set of dates that cannot be selected
+ * @param isDateEnabled Function to determine if a date can be selected
+ * @param minDate Minimum selectable date (inclusive). Null for no minimum.
+ * @param maxDate Maximum selectable date (inclusive). Null for no maximum.
+ * @param itemContent Optional custom content for date items. If provided, overrides default DateCard.
+ */
 @Composable
 fun DateList(
     modifier: Modifier = Modifier,
