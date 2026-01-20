@@ -43,16 +43,6 @@ kotlin {
 
     withSourcesJar(publish = false)
 
-    androidTarget {
-        compilations.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_21)
-                }
-            }
-        }
-    }
-
     listOf(
         iosX64(),
         iosArm64(),
@@ -81,9 +71,17 @@ kotlin {
         binaries.executable()
     }
 
+    androidLibrary {
+        namespace = "$group.$library"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
+            implementation(compose.uiTooling)
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
@@ -105,25 +103,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
-    }
-}
-
-android {
-    namespace = "$group.$library"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    dependencies {
-        debugImplementation(compose.uiTooling)
     }
 }
 
