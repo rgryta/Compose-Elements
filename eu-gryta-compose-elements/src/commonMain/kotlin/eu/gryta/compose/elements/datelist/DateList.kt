@@ -67,11 +67,12 @@ fun DateList(
         onClick: () -> Unit,
     ) -> Unit)? = null,
 ) {
+    val now = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
+
     val state = rememberInfiniteListState(
         initialItems = (0 until initialItemsCount).map {
             DateCardInfo(
-                date = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date.minus(DatePeriod(days = it))
+                date = now.minus(DatePeriod(days = it))
             )
         },
         loadMore = { currentItems ->

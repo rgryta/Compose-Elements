@@ -5,7 +5,6 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -18,6 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -62,7 +65,10 @@ fun Loading(
     }
 
     Row(
-        modifier = Modifier
+        modifier = Modifier.semantics {
+            contentDescription = "Loading"
+            liveRegion = LiveRegionMode.Polite
+        }
     ) {
 
         circles.forEachIndexed { index, animatable ->
@@ -71,7 +77,7 @@ fun Loading(
                 Spacer(modifier = Modifier.width(width = 6.dp))
             }
 
-            Box(
+            Spacer(
                 modifier = Modifier
                     .size(size = circleSize)
                     .clip(shape = CircleShape)
@@ -79,8 +85,7 @@ fun Loading(
                         color = circleColor
                             .copy(alpha = animatable.value)
                     )
-            ) {
-            }
+            )
         }
     }
 }

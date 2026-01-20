@@ -10,6 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import eu.gryta.compose.elements.resources.Res
 import eu.gryta.compose.elements.resources.day_of_week_fri_short
@@ -25,6 +30,16 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+private val DAY_OF_WEEK_STRING_RESOURCES = mapOf(
+    DayOfWeek.MONDAY to Res.string.day_of_week_mon_short,
+    DayOfWeek.TUESDAY to Res.string.day_of_week_tue_short,
+    DayOfWeek.WEDNESDAY to Res.string.day_of_week_wed_short,
+    DayOfWeek.THURSDAY to Res.string.day_of_week_thu_short,
+    DayOfWeek.FRIDAY to Res.string.day_of_week_fri_short,
+    DayOfWeek.SATURDAY to Res.string.day_of_week_sat_short,
+    DayOfWeek.SUNDAY to Res.string.day_of_week_sun_short
+)
+
 @Composable
 fun DateCard(
     date: LocalDate,
@@ -39,9 +54,20 @@ fun DateCard(
     else MaterialTheme.colorScheme.outline,
     shape: Shape = RoundedCornerShape(12.dp),
 ) {
+    val dayName = stringResource(resource = date.dateOfWeek())
+    val shortDate = "${date.day}/${date.month.number}"
+
     Surface(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = if (selected) {
+                "Selected date: $dayName $shortDate"
+            } else {
+                "Date: $dayName $shortDate"
+            }
+            this.selected = selected
+            role = Role.Button
+        },
         shape = shape,
         color = containerColor,
         contentColor = contentColor,
@@ -65,13 +91,5 @@ fun LocalDate.buttonText(): String {
 }
 
 fun LocalDate.dateOfWeek(): StringResource {
-    return mapOf(
-        DayOfWeek.MONDAY to Res.string.day_of_week_mon_short,
-        DayOfWeek.TUESDAY to Res.string.day_of_week_tue_short,
-        DayOfWeek.WEDNESDAY to Res.string.day_of_week_wed_short,
-        DayOfWeek.THURSDAY to Res.string.day_of_week_thu_short,
-        DayOfWeek.FRIDAY to Res.string.day_of_week_fri_short,
-        DayOfWeek.SATURDAY to Res.string.day_of_week_sat_short,
-        DayOfWeek.SUNDAY to Res.string.day_of_week_sun_short
-    ).getValue(key = this.dayOfWeek)
+    return DAY_OF_WEEK_STRING_RESOURCES.getValue(key = this.dayOfWeek)
 }
