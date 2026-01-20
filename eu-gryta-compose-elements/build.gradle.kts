@@ -188,9 +188,9 @@ mavenPublishing {
 
         licenses {
             license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                name.set("GNU General Public License v3.0")
+                url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                distribution.set("repo")
             }
         }
 
