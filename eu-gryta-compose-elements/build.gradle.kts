@@ -80,16 +80,24 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            @Suppress("DEPRECATION")
             implementation(compose.preview)
+            @Suppress("DEPRECATION")
             implementation(compose.uiTooling)
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            @Suppress("DEPRECATION")
             implementation(compose.runtime)
+            @Suppress("DEPRECATION")
             implementation(compose.foundation)
+            @Suppress("DEPRECATION")
             implementation(compose.material3)
+            @Suppress("DEPRECATION")
             implementation(compose.ui)
+            @Suppress("DEPRECATION")
             implementation(compose.components.resources)
+            @Suppress("DEPRECATION")
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
