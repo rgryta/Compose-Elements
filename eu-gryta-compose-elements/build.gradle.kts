@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
-    alias(libs.plugins.venniktech)
+    alias(libs.plugins.vanniktech)
 }
 
 
@@ -35,7 +35,7 @@ val isCI = System.getenv("GITHUB_ACTIONS") == "true"
 version = if (isCI) baseVersion else "${bumpPatchVersion(baseVersion)}-SNAPSHOT"
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
@@ -56,18 +56,26 @@ kotlin {
 
     jvm {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
         }
     }
 
     js {
-        browser()
+        browser {
+            testTask {
+                enabled = false // Browser tests disabled - no headless Chrome in CI
+            }
+        }
         binaries.executable()
     }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        browser()
+        browser {
+            testTask {
+                enabled = false // Browser tests disabled - no headless Chrome in CI
+            }
+        }
         binaries.executable()
     }
 

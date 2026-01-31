@@ -27,4 +27,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ben-manes = { id = "com.github.ben-manes.versions", version.ref = "ben-manes" }
-venniktech = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech" }
+vanniktech = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech" }
