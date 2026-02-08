@@ -84,6 +84,10 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
     }
 
     sourceSets {
@@ -118,6 +122,26 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+        }
+    }
+}
+
+// Workaround: com.android.kotlin.multiplatform.library strips META-INF/kotlin_module from the
+// AAR's classes.jar. Without it, consumers can't resolve top-level Kotlin functions (Composables).
+val classesJarPath = layout.buildDirectory.file("intermediates/aar_main_jar/androidMain/syncAndroidMainLibJars/classes.jar")
+val kotlinModuleDirPath = layout.buildDirectory.dir("classes/kotlin/android/main")
+tasks.matching { it.name == "syncAndroidMainLibJars" }.configureEach {
+    doLast {
+        val classesJar = classesJarPath.get().asFile
+        val kotlinModuleDir = kotlinModuleDirPath.get().asFile
+        val metaInf = File(kotlinModuleDir, "META-INF")
+        if (classesJar.exists() && metaInf.exists()) {
+            val proc = ProcessBuilder(
+                "jar", "uf", classesJar.absolutePath,
+                "-C", kotlinModuleDir.absolutePath, "META-INF"
+            ).redirectErrorStream(true).start()
+            proc.inputStream.bufferedReader().readText()
+            require(proc.waitFor() == 0) { "Failed to inject kotlin_module into classes.jar" }
         }
     }
 }
