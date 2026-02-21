@@ -131,6 +131,7 @@ kotlin {
 val classesJarPath = layout.buildDirectory.file("intermediates/aar_main_jar/androidMain/syncAndroidMainLibJars/classes.jar")
 val kotlinModuleDirPath = layout.buildDirectory.dir("classes/kotlin/android/main")
 tasks.matching { it.name == "syncAndroidMainLibJars" }.configureEach {
+    notCompatibleWithConfigurationCache("kotlin_module workaround uses ProcessBuilder")
     doLast {
         val classesJar = classesJarPath.get().asFile
         val kotlinModuleDir = kotlinModuleDirPath.get().asFile
