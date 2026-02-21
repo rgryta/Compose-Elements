@@ -128,23 +128,36 @@ kotlin {
 
 // Workaround: com.android.kotlin.multiplatform.library strips META-INF/kotlin_module from the
 // AAR's classes.jar. Without it, consumers can't resolve top-level Kotlin functions (Composables).
-val classesJarPath = layout.buildDirectory.file("intermediates/aar_main_jar/androidMain/syncAndroidMainLibJars/classes.jar")
-val kotlinModuleDirPath = layout.buildDirectory.dir("classes/kotlin/android/main")
-tasks.matching { it.name == "syncAndroidMainLibJars" }.configureEach {
-    notCompatibleWithConfigurationCache("kotlin_module workaround uses ProcessBuilder")
-    doLast {
-        val classesJar = classesJarPath.get().asFile
-        val kotlinModuleDir = kotlinModuleDirPath.get().asFile
-        val metaInf = File(kotlinModuleDir, "META-INF")
-        if (classesJar.exists() && metaInf.exists()) {
-            val proc = ProcessBuilder(
-                "jar", "uf", classesJar.absolutePath,
-                "-C", kotlinModuleDir.absolutePath, "META-INF"
-            ).redirectErrorStream(true).start()
-            proc.inputStream.bufferedReader().readText()
-            require(proc.waitFor() == 0) { "Failed to inject kotlin_module into classes.jar" }
-        }
+abstract class InjectKotlinModuleTask : DefaultTask() {
+    @get:InputFile
+    @get:Optional
+    abstract val classesJar: RegularFileProperty
+
+    @get:InputDirectory
+    @get:Optional
+    abstract val kotlinModuleDir: DirectoryProperty
+
+    @TaskAction
+    fun inject() {
+        val jar = classesJar.asFile.orNull ?: return
+        val dir = kotlinModuleDir.asFile.orNull ?: return
+        val metaInf = File(dir, "META-INF")
+        if (!jar.exists() || !metaInf.exists()) return
+        val proc = ProcessBuilder("jar", "uf", jar.absolutePath, "-C", dir.absolutePath, "META-INF")
+            .redirectErrorStream(true).start()
+        proc.inputStream.bufferedReader().readText()
+        require(proc.waitFor() == 0) { "Failed to inject kotlin_module into classes.jar" }
     }
+}
+
+val injectKotlinModule = tasks.register<InjectKotlinModuleTask>("injectKotlinModule") {
+    classesJar.set(layout.buildDirectory.file("intermediates/aar_main_jar/androidMain/syncAndroidMainLibJars/classes.jar"))
+    kotlinModuleDir.set(layout.buildDirectory.dir("classes/kotlin/android/main"))
+    mustRunAfter("syncAndroidMainLibJars")
+}
+
+tasks.matching { it.name == "syncAndroidMainLibJars" }.configureEach {
+    finalizedBy(injectKotlinModule)
 }
 
 // Compose generated packages setup
