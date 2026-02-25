@@ -150,14 +150,14 @@ abstract class InjectKotlinModuleTask : DefaultTask() {
     }
 }
 
-val injectKotlinModule = tasks.register<InjectKotlinModuleTask>("injectKotlinModule") {
+tasks.register<InjectKotlinModuleTask>("injectKotlinModule") {
     classesJar.set(layout.buildDirectory.file("intermediates/aar_main_jar/androidMain/syncAndroidMainLibJars/classes.jar"))
     kotlinModuleDir.set(layout.buildDirectory.dir("classes/kotlin/android/main"))
     mustRunAfter("syncAndroidMainLibJars")
 }
 
 tasks.matching { it.name == "syncAndroidMainLibJars" }.configureEach {
-    finalizedBy(injectKotlinModule)
+    finalizedBy("injectKotlinModule")
 }
 
 // Compose generated packages setup
