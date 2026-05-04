@@ -9,7 +9,7 @@ composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.1"
 kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
-ben-manes = "0.53.0"
+ben-manes = "0.54.0"
 vanniktech = "0.36.0"
 
 [libraries]
